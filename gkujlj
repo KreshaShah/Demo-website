@@ -1,0 +1,5 @@
+ item_name: productName,
+          item_id: productId,
+          price: price,
+          quantity: quantity,
+            item_category: 'Featured'
