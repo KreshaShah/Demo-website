@@ -1,0 +1,100 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Checkout</title>
+  <style>
+    .checkout-container {
+      width: 70%;
+      margin: 0 auto;
+      font-family: Arial, sans-serif;
+    }
+    .checkout-container h2 {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    .checkout-container .cart-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px;
+      border-bottom: 1px solid #ccc;
+    }
+    .checkout-container .total {
+      font-size: 1.5em;
+      margin-top: 20px;
+    }
+    #place-order-btn {
+      background-color: #4CAF50;
+      color: white;
+      padding: 15px 32px;
+      font-size: 16px;
+      border: none;
+      cursor: pointer;
+      display: block;
+      width: 100%;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="checkout-container">
+    <h2>Checkout</h2>
+    <div id="checkout-items"></div>
+    <div class="total">
+      <h3>Total: $<span id="total-price">0.00</span></h3>
+    </div>
+    <button id="place-order-btn">Place Order</button>
+  </div>
+
+  <script>
+    let cart = JSON.parse(localStorage.getItem('cart')) || [];
+    let totalPrice = 0;
+
+    if (cart.length === 0) {
+      document.getElementById('checkout-items').innerHTML = "<p>Your cart is empty.</p>";
+    } else {
+      let cartHTML = "";
+      cart.forEach(item => {
+        cartHTML += `
+          <div class="cart-item">
+            <div>${item.name} (Size: ${item.size})</div>
+            <div>$${item.price}</div>
+          </div>`;
+        totalPrice += item.price;
+      });
+      document.getElementById('checkout-items').innerHTML = cartHTML;
+      document.getElementById('total-price').textContent = totalPrice.toFixed(2);
+    }
+
+    document.getElementById('place-order-btn').addEventListener('click', function () {
+      if (cart.length === 0) {
+        alert("Your cart is empty. Please add items to your cart before placing an order.");
+        return;
+      }
+
+      // Push purchase event
+      dataLayer = window.dataLayer || [];
+      dataLayer.push({
+        event: 'purchase',
+        ecommerce: {
+          transaction_id: 'T' + Math.floor(Math.random() * 100000),
+          currency: 'USD',
+          value: totalPrice,
+          items: cart.map(item => ({
+            item_name: item.name,
+            price: item.price,
+            item_size: item.size,
+            item_category: 'Featured'
+          }))
+        }
+      });
+
+      alert("Order placed successfully!");
+      localStorage.removeItem('cart');
+      window.location.href = "thankyou.html";
+    });
+  </script>
+</body>
+</html>

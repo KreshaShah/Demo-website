@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Product Details</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Google Tag Manager -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-HXRXMBMM6F"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() { dataLayer.push(arguments); }
+    gtag('js', new Date());
+    gtag('config', 'G-HXRXMBMM6F');
+  </script>
+  <script>
+    (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+      new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+      j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+      'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-NH54NL29');
+  </script>
+
+  <style>
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      margin: 0;
+    }
+    .topnav {
+      overflow: hidden;
+      background-color: #333;
+    }
+    .topnav a {
+      float: left;
+      color: #f2f2f2;
+      text-align: center;
+      padding: 14px 16px;
+      text-decoration: none;
+      font-size: 17px;
+    }
+    .topnav a:hover {
+      background-color: #ddd;
+      color: black;
+    }
+    .topnav a.active {
+      background-color: #04AA6D;
+      color: white;
+    }
+
+    .container {
+      display: flex;
+      justify-content: space-around;
+      align-items: flex-start;
+      margin: 2em;
+    }
+    .product-detail {
+      display: flex;
+      gap: 2em;
+    }
+    .product-detail img {
+      max-width: 400px;
+      height: auto;
+      border-radius: 10px;
+    }
+    .product-detail .info {
+      max-width: 400px;
+    }
+    .product-detail h3 {
+      margin-bottom: 1em;
+    }
+    .product-detail p {
+      font-size: 1.2em;
+      margin: 1em 0;
+    }
+    .buttons {
+      display: flex;
+      gap: 1em;
+    }
+    .cart-box {
+      border: 1px solid #ccc;
+      padding: 1em;
+      max-width: 300px;
+      background-color: #f9f9f9;
+    }
+  </style>
+</head>
+<body>
+
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NH54NL29"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+
+<!-- NAVBAR -->
+<div class="topnav">
+  <a href="demo.html" class="active">Home</a>
+  <a href="news.html">Products</a>
+  <a href="contact.html">Contact</a>
+  <a href="about.html">About</a>
+</div>
+
+<div class="container">
+  <!-- Product Details -->
+  <div class="product-detail">
+    <img id="product-image" src="" alt="Product Image">
+    <div class="info">
+      <h3 id="product-name"></h3>
+      <p id="product-price"></p>
+      <label for="size">Size: </label>
+      <select id="size">
+        <option value="S">Small</option>
+        <option value="M">Medium</option>
+        <option value="L">Large</option>
+        <option value="XL">X-Large</option>
+      </select>
+      <div class="buttons">
+        <button id="add-to-cart-btn">Add to Cart</button>
+        <button id="buy-now-btn">Buy Now</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Cart on Right -->
+  <div class="cart-box">
+    <h4>Cart will be visible here</h4>
+    <p>Check <a href="checkout.html">checkout</a> page to see added items.</p>
+  </div>
+</div>
+
+<script>
+  // Parse query string and update UI
+  function getProductDetails() {
+    const params = new URLSearchParams(window.location.search);
+    const name = params.get('name');
+    const price = params.get('price');
+    const image = params.get('image');
+
+    document.getElementById('product-name').textContent = name;
+    document.getElementById('product-price').textContent = `$${price}`;
+    document.getElementById('product-image').src = image;
+
+    // Push view_item to dataLayer
+    dataLayer.push({
+      event: 'view_item',
+      ecommerce: {
+        currency: "USD",
+        items: [{
+          item_name: name,
+          price: parseFloat(price),
+          item_category: "Featured"
+        }]
+      }
+    });
+  }
+
+  // Add to Cart Button
+  document.getElementById('add-to-cart-btn').addEventListener('click', function () {
+    const name = document.getElementById('product-name').textContent;
+    const price = parseFloat(document.getElementById('product-price').textContent.replace('$', ''));
+    const size = document.getElementById('size').value;
+
+    const product = { name, price, size };
+    let cart = JSON.parse(localStorage.getItem('cart')) || [];
+    cart.push(product);
+    localStorage.setItem('cart', JSON.stringify(cart));
+
+    // Push to dataLayer
+    dataLayer.push({
+      event: 'add_to_cart',
+      ecommerce: {
+        currency: "USD",
+        items: [{
+          item_name: name,
+          price: price,
+          item_size: size,
+          item_category: "Featured"
+        }]
+      }
+    });
+
+    alert(`${name} (Size: ${size}) added to cart!`);
+  });
+
+  // Buy Now Button
+  document.getElementById('buy-now-btn').addEventListener('click', function () {
+    const name = document.getElementById('product-name').textContent;
+    const price = parseFloat(document.getElementById('product-price').textContent.replace('$', ''));
+    const size = document.getElementById('size').value;
+
+    // Push dataLayer event
+    dataLayer.push({
+      event: 'begin_checkout',
+      ecommerce: {
+        currency: "USD",
+        items: [{
+          item_name: name,
+          price: price,
+          item_size: size,
+          item_category: "Featured"
+        }]
+      }
+    });
+
+    // Redirect to checkout
+    window.location.href = `checkout.html?name=${encodeURIComponent(name)}&price=${price}&size=${size}`;
+  });
+
+  getProductDetails();
+</script>
+
+</body>
+</html>
